@@ -1,6 +1,6 @@
 [project]
 name = "pydantic-ai-shields"
-version = "0.3.0"
+version = "0.3.1"
 description = "Guardrail capabilities for Pydantic AI — cost tracking, tool permissions, input/output guards"
 readme = "README.md"
 license = "MIT"
@@ -23,7 +23,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pydantic-ai-slim>=1.71.0",
+    "pydantic-ai-slim>=1.74.0",
     "pydantic>=2.0",
     "genai-prices>=0.0.49",
 ]
