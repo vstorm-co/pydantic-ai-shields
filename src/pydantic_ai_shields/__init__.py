@@ -31,6 +31,7 @@ from .guardrails import (
     InputGuard,
     OutputBlocked,
     OutputGuard,
+    PricingError,
     ToolBlocked,
     ToolGuard,
 )
@@ -70,4 +71,5 @@ __all__ = [
     "OutputBlocked",
     "ToolBlocked",
     "BudgetExceededError",
+    "PricingError",
 ]

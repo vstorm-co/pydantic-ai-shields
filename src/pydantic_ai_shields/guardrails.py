@@ -72,6 +72,18 @@ class BudgetExceededError(GuardrailError):
         super().__init__(f"Budget exceeded: ${total_cost:.4f} > ${budget:.4f}")
 
 
+class PricingError(GuardrailError):
+    """Raised when cost calculation fails (strict mode only).
+
+    Attributes:
+        model_name: The model name that failed to resolve.
+    """
+
+    def __init__(self, model_name: str):
+        self.model_name = model_name
+        super().__init__(f"Failed to resolve price for model '{model_name}'")
+
+
 # ---------------------------------------------------------------------------
 # Type aliases
 # ---------------------------------------------------------------------------
@@ -145,6 +157,9 @@ class CostTracking(AbstractCapability[Any]):
     budget_usd: float | None = None
     """Maximum allowed cumulative cost. None = unlimited."""
 
+    strict: bool = False
+    """If True, raise PricingError when cost calculation fails. Default: log warning."""
+
     on_cost_update: CostCallback = None
     """Callback invoked after each run with CostInfo."""
 
@@ -153,9 +168,6 @@ class CostTracking(AbstractCapability[Any]):
     _total_response_tokens: int = field(default=0, init=False, repr=False)
     _total_cost_usd: float = field(default=0.0, init=False, repr=False)
     _run_count: int = field(default=0, init=False, repr=False)
-    _price_per_input: float | None = field(default=None, init=False, repr=False)
-    _price_per_output: float | None = field(default=None, init=False, repr=False)
-    _prices_resolved: bool = field(default=False, init=False, repr=False)
 
     @property
     def total_cost(self) -> float:
@@ -177,47 +189,30 @@ class CostTracking(AbstractCapability[Any]):
         """Number of completed runs."""
         return self._run_count
 
-    def _resolve_prices(self, model_name: str | None = None) -> None:
-        """Resolve per-token pricing from genai-prices."""
-        if self._prices_resolved:
-            return
+    def _calculate_cost(
+        self, model_name: str, input_tokens: int, output_tokens: int
+    ) -> float | None:
+        """Calculate USD cost using genai-prices ``calc_price``."""
+        try:
+            from genai_prices import calc_price  # type: ignore[attr-defined]
+            from genai_prices.types import Usage as GenaiUsage  # type: ignore[attr-defined]
 
-        name = model_name or self.model_name
-        if name is None:
-            self._prices_resolved = True
-            return
+            provider_id: str | None = None
+            model_ref = model_name
+            if ":" in model_name:
+                provider_id, model_ref = model_name.split(":", 1)
 
-        try:  # pragma: no cover — depends on genai-prices database
-            from genai_prices import get_model_prices  # type: ignore[attr-defined]
-
-            # Parse "provider:model" format
-            if ":" in name:
-                _, model_id = name.split(":", 1)
-            else:
-                model_id = name
-
-            prices = get_model_prices(model_id)
-            if prices:
-                self._price_per_input = prices.get("input", 0.0)
-                self._price_per_output = prices.get("output", 0.0)
+            usage = GenaiUsage(input_tokens=input_tokens, output_tokens=output_tokens)
+            result = calc_price(usage=usage, model_ref=model_ref, provider_id=provider_id)
+            return float(result.total_price)
         except Exception:
-            pass
-
-        self._prices_resolved = True
-
-    def _calculate_cost(self, input_tokens: int, output_tokens: int) -> float | None:
-        """Calculate USD cost for given token counts."""
-        if self._price_per_input is None or self._price_per_output is None:
+            if self.strict:
+                raise PricingError(model_name) from None
+            logger.warning("CostTracking: failed to resolve price for model '%s'", model_name)
             return None
-        return input_tokens * self._price_per_input + output_tokens * self._price_per_output
 
     async def before_run(self, ctx: RunContext[Any]) -> None:
-        """Resolve prices on first run using model info from context."""
-        if not self._prices_resolved:
-            model_id = getattr(ctx.model, "model_id", None)
-            self._resolve_prices(str(model_id) if model_id else None)
-
-        # Check budget before run starts
+        """Check budget before run starts."""
         if self.budget_usd is not None and self._total_cost_usd >= self.budget_usd:
             raise BudgetExceededError(self._total_cost_usd, self.budget_usd)
 
@@ -231,8 +226,11 @@ class CostTracking(AbstractCapability[Any]):
         self._total_response_tokens += run_output
         self._run_count += 1
 
-        run_cost = self._calculate_cost(run_input, run_output)
-        if run_cost is not None:  # pragma: no cover — requires genai-prices resolution
+        model_id = getattr(ctx.model, "model_id", None)
+        model_name = str(model_id) if model_id else self.model_name
+        run_cost = self._calculate_cost(model_name, run_input, run_output) if model_name else None
+
+        if run_cost is not None:
             self._total_cost_usd += run_cost
 
         # Callback
@@ -553,4 +551,5 @@ __all__ = [
     "OutputBlocked",
     "ToolBlocked",
     "BudgetExceededError",
+    "PricingError",
 ]

@@ -19,6 +19,7 @@ from pydantic_ai_shields.guardrails import (
     InputGuard,
     OutputBlocked,
     OutputGuard,
+    PricingError,
     ToolBlocked,
     ToolGuard,
 )
@@ -82,6 +83,19 @@ class TestCostTracking:
         cap._total_cost_usd = 1.0
         with pytest.raises(BudgetExceededError):
             await agent.run("Hello")
+
+    @pytest.mark.anyio
+    async def test_cost_accumulates_when_prices_resolve(self):
+        """Cost accumulates in total_cost_usd when _calculate_cost returns a value."""
+        from unittest.mock import patch
+
+        cap = CostTracking()
+        agent = Agent(TestModel(), capabilities=[cap])
+
+        with patch.object(cap, "_calculate_cost", return_value=0.005):
+            await agent.run("Hello")
+
+        assert cap.total_cost == 0.005
 
 
 # ---------------------------------------------------------------------------
@@ -360,47 +374,60 @@ class TestComposition:
 
 
 class TestCostTrackingPricing:
-    def test_resolve_with_model_name(self):
-        """Pricing resolution with a model name."""
-        cap = CostTracking(model_name="openai:gpt-4.1")
-        cap._resolve_prices()
-        assert cap._prices_resolved is True
+    def test_calculate_cost_with_provider_prefix(self):
+        """Cost calculation with 'provider:model' format."""
+        from decimal import Decimal
+        from unittest.mock import MagicMock, patch
 
-    def test_resolve_without_model_name(self):
-        """No model name → prices stay None."""
         cap = CostTracking()
-        cap._resolve_prices()
-        assert cap._prices_resolved is True
-        assert cap._price_per_input is None
+        mock_result = MagicMock()
+        mock_result.total_price = Decimal("0.002")
+        with patch("genai_prices.calc_price", return_value=mock_result) as mock_calc:
+            cost = cap._calculate_cost("openai:gpt-4.1", 1000, 500)
+        assert cost == 0.002
+        call_kwargs = mock_calc.call_args
+        assert call_kwargs.kwargs["model_ref"] == "gpt-4.1"
+        assert call_kwargs.kwargs["provider_id"] == "openai"
 
-    def test_resolve_plain_model_name(self):
-        """Model name without provider prefix."""
-        cap = CostTracking(model_name="gpt-4.1")
-        cap._resolve_prices()
-        assert cap._prices_resolved is True
+    def test_calculate_cost_plain_model(self):
+        """Cost calculation with plain model name (no provider prefix)."""
+        from decimal import Decimal
+        from unittest.mock import MagicMock, patch
 
-    def test_calculate_cost_with_prices(self):
-        """Cost calculation when prices are known."""
         cap = CostTracking()
-        cap._price_per_input = 0.001
-        cap._price_per_output = 0.002
-        cost = cap._calculate_cost(1000, 500)
-        assert cost is not None
-        assert cost == 1000 * 0.001 + 500 * 0.002
+        mock_result = MagicMock()
+        mock_result.total_price = Decimal("0.001")
+        with patch("genai_prices.calc_price", return_value=mock_result) as mock_calc:
+            cost = cap._calculate_cost("gpt-4.1", 1000, 500)
+        assert cost == 0.001
+        call_kwargs = mock_calc.call_args
+        assert call_kwargs.kwargs["model_ref"] == "gpt-4.1"
+        assert call_kwargs.kwargs["provider_id"] is None
 
-    def test_calculate_cost_without_prices(self):
-        """Cost calculation returns None without prices."""
+    def test_calculate_cost_failure_returns_none(self):
+        """Cost calculation returns None with warning on failure (non-strict)."""
+        from unittest.mock import patch
+
         cap = CostTracking()
-        cost = cap._calculate_cost(1000, 500)
+        with patch("genai_prices.calc_price", side_effect=Exception("unknown model")):
+            cost = cap._calculate_cost("unknown:model", 1000, 500)
         assert cost is None
 
-    def test_idempotent_resolve(self):
-        """Second resolve is a no-op."""
-        cap = CostTracking(model_name="openai:gpt-4.1")
-        cap._resolve_prices()
-        first_state = cap._price_per_input
-        cap._resolve_prices()
-        assert cap._price_per_input == first_state
+    def test_calculate_cost_strict_raises_pricing_error(self):
+        """Cost calculation raises PricingError in strict mode."""
+        from unittest.mock import patch
+
+        cap = CostTracking(strict=True)
+        with (
+            patch("genai_prices.calc_price", side_effect=Exception("unknown model")),
+            pytest.raises(PricingError, match="unknown:model"),
+        ):
+            cap._calculate_cost("unknown:model", 1000, 500)
+
+    def test_calculate_cost_no_model_returns_none(self):
+        """After-run with no model name → cost is None."""
+        cap = CostTracking()
+        assert cap.model_name is None
 
 
 # ---------------------------------------------------------------------------
@@ -426,6 +453,12 @@ class TestExceptions:
     def test_guardrail_error_base(self):
         err = GuardrailError("test")
         assert str(err) == "test"
+
+    def test_pricing_error(self):
+        err = PricingError("openai:future-model")
+        assert err.model_name == "openai:future-model"
+        assert "openai:future-model" in str(err)
+        assert isinstance(err, GuardrailError)
 
 
 # ---------------------------------------------------------------------------
