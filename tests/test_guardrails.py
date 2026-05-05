@@ -426,7 +426,7 @@ class TestCostTrackingPricing:
 
     @pytest.mark.anyio
     async def test_after_run_skips_cost_when_no_model_name(self):
-        """_calculate_cost is never called when ctx.model.model_id is falsy and model_name is None."""
+        """_calculate_cost is never called when model_id is falsy and model_name is None."""
         from unittest.mock import patch
 
         class _NoIdModel(TestModel):
