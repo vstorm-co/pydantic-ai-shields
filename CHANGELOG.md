@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2026-05-24
+
+### Infrastructure
+
+Pure CI / dependency-bot housekeeping — no source-code changes, no behaviour change since 0.3.2. Consolidates the two open Renovate auto-PRs (#27, #28) plus the rate-limited items from the [Dependency Dashboard #29](https://github.com/vstorm-co/pydantic-ai-shields/issues/29) into a single release so downstream consumers see one bump instead of four.
+
+- **CI: bump `actions/checkout` to `v6`** across `ci.yml` (×4), `docs.yml`, `publish.yml` ([#27](https://github.com/vstorm-co/pydantic-ai-shields/pull/27), Renovate auto-PR — folded in here).
+- **CI: bump `actions/deploy-pages` to `v5`** in `docs.yml` ([#28](https://github.com/vstorm-co/pydantic-ai-shields/pull/28), Renovate auto-PR — folded in here).
+- **CI: bump `astral-sh/setup-uv` to `v8.1.0`** across `ci.yml` (×4), `docs.yml`, `publish.yml` — from Dashboard #29 (rate-limited). Pinned to the specific patch because `astral-sh/setup-uv` does not maintain a rolling `v8` tag (only `v8.0.0` / `v8.1.0`; `v7` and earlier do have rolling majors).
+- **CI: bump `actions/upload-pages-artifact` to `v5`** in `docs.yml` — from Dashboard #29 (rate-limited); `v5` has a rolling tag so plain `@v5` is used.
+
+The `ci.yml` test matrix (`['3.10', '3.13']`) is unchanged.
+
 ## [0.3.2] - 2026-05-05
 
 ### Fixed
