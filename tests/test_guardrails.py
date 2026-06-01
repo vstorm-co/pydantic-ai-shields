@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import asyncio
+from decimal import Decimal
 from typing import Any
+from unittest.mock import MagicMock, patch
 
 import pytest
-from pydantic_ai import Agent
+from pydantic_ai import Agent, RunContext
+from pydantic_ai.messages import ToolCallPart
 from pydantic_ai.models.test import TestModel
 from pydantic_ai.tools import ToolDefinition
+from pydantic_ai.usage import RunUsage
 
 from pydantic_ai_shields.guardrails import (
     AsyncGuardrail,
@@ -87,7 +92,6 @@ class TestCostTracking:
     @pytest.mark.anyio
     async def test_cost_accumulates_when_prices_resolve(self):
         """Cost accumulates in total_cost_usd when _calculate_cost returns a value."""
-        from unittest.mock import patch
 
         cap = CostTracking()
         agent = Agent(TestModel(), capabilities=[cap])
@@ -130,8 +134,6 @@ class TestToolGuard:
 
     @pytest.mark.anyio
     async def test_blocked_tools_hidden(self):
-        from pydantic_ai.tools import ToolDefinition
-
         cap = ToolGuard(blocked=["execute", "write_file"])
 
         ctx = _make_ctx()
@@ -376,8 +378,6 @@ class TestComposition:
 class TestCostTrackingPricing:
     def test_calculate_cost_with_provider_prefix(self):
         """Cost calculation with 'provider:model' format."""
-        from decimal import Decimal
-        from unittest.mock import MagicMock, patch
 
         cap = CostTracking()
         mock_result = MagicMock()
@@ -391,8 +391,6 @@ class TestCostTrackingPricing:
 
     def test_calculate_cost_plain_model(self):
         """Cost calculation with plain model name (no provider prefix)."""
-        from decimal import Decimal
-        from unittest.mock import MagicMock, patch
 
         cap = CostTracking()
         mock_result = MagicMock()
@@ -406,7 +404,6 @@ class TestCostTrackingPricing:
 
     def test_calculate_cost_failure_returns_none(self):
         """Cost calculation returns None with warning on failure (non-strict)."""
-        from unittest.mock import patch
 
         cap = CostTracking()
         with patch("genai_prices.calc_price", side_effect=Exception("unknown model")):
@@ -415,7 +412,6 @@ class TestCostTrackingPricing:
 
     def test_calculate_cost_strict_raises_pricing_error(self):
         """Cost calculation raises PricingError in strict mode."""
-        from unittest.mock import patch
 
         cap = CostTracking(strict=True)
         with (
@@ -427,7 +423,6 @@ class TestCostTrackingPricing:
     @pytest.mark.anyio
     async def test_after_run_skips_cost_when_no_model_name(self):
         """_calculate_cost is never called when model_id is falsy and model_name is None."""
-        from unittest.mock import patch
 
         class _NoIdModel(TestModel):
             model_id = None  # type: ignore[assignment]
@@ -495,7 +490,6 @@ class TestAsyncGuardrailEdgeCases:
     @pytest.mark.anyio
     async def test_timeout_on_guard(self):
         """Guard timeout is handled."""
-        import asyncio
 
         async def slow_guard(prompt: str) -> bool:
             await asyncio.sleep(10)
@@ -518,13 +512,8 @@ class TestAsyncGuardrailEdgeCases:
 
 
 def _make_ctx() -> Any:
-    from pydantic_ai import RunContext
-    from pydantic_ai.usage import RunUsage
-
     return RunContext(deps=None, model=TestModel(), usage=RunUsage())
 
 
 def _make_call(tool_name: str) -> Any:
-    from pydantic_ai.messages import ToolCallPart
-
     return ToolCallPart(tool_name=tool_name, args={}, tool_call_id="test_call")

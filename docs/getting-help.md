@@ -17,8 +17,9 @@ For questions, ideas, and general discussion:
 
 ## Documentation
 
-- [Core Concepts](concepts/index.md) - Understand middleware, hooks, and context
-- [Advanced Features](advanced/middleware-chains.md) - Chains, parallel execution, config loading
+- [Core Concepts](concepts/index.md) - How shields work as native Pydantic AI capabilities
+- [Cost Tracking](advanced/cost-tracking.md) - Token/USD tracking and budget enforcement
+- [Async Guardrails](advanced/async-guardrails.md) - Run a guard concurrently with the LLM call
 - [Examples](examples/index.md) - Real-world usage examples
 - [API Reference](api/index.md) - Complete API documentation
 

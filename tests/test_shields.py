@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import pytest
-from pydantic_ai import Agent
+from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.test import TestModel
+from pydantic_ai.usage import RunUsage
 
 from pydantic_ai_shields import (
     BlockedKeywords,
@@ -76,8 +77,6 @@ class TestPromptInjection:
     @pytest.mark.anyio
     async def test_none_prompt_passes(self):
         """None prompt is allowed."""
-        from pydantic_ai import RunContext
-        from pydantic_ai.usage import RunUsage
 
         cap = PromptInjection()
         ctx = RunContext(deps=None, model=TestModel(), usage=RunUsage())
@@ -150,9 +149,6 @@ class TestPiiDetector:
 
     @pytest.mark.anyio
     async def test_none_prompt_passes(self):
-        from pydantic_ai import RunContext
-        from pydantic_ai.usage import RunUsage
-
         cap = PiiDetector()
         ctx = RunContext(deps=None, model=TestModel(), usage=RunUsage())
         await cap.before_run(ctx)
@@ -302,9 +298,6 @@ class TestBlockedKeywords:
 
     @pytest.mark.anyio
     async def test_none_prompt_passes(self):
-        from pydantic_ai import RunContext
-        from pydantic_ai.usage import RunUsage
-
         cap = BlockedKeywords(keywords=["bad"])
         ctx = RunContext(deps=None, model=TestModel(), usage=RunUsage())
         await cap.before_run(ctx)
