@@ -1,6 +1,6 @@
 [project]
 name = "pydantic-ai-shields"
-version = "0.3.3"
+version = "0.3.4"
 description = "Guardrail capabilities for Pydantic AI — cost tracking, tool permissions, input/output guards"
 readme = "README.md"
 license = "MIT"

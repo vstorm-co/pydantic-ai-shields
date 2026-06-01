@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4] - 2026-05-24
+
+### Changed
+
+- **Docstring and import hygiene (internal; no behavior change).** Converted reStructuredText-style double-backtick inline code in docstrings and comments to single-backtick Markdown (6 occurrences), so it renders correctly under the mkdocstrings Markdown handler. Hoisted 56 function-local imports to module top where safe; intentionally-lazy, conditional, optional-dependency (`try`/`except ImportError`), and circular-import-avoidance imports were left in place.
+
+### Documentation
+
+- **Documentation accuracy pass.** Rewrote the stale `llmstxt` configuration (it referenced ~20 pre-rename "middleware" pages that no longer exist) to mirror the real nav, fixed dead links in the help page and the `pydantic-ai-slim` version pin (`>=1.74.0`), documented the previously-missing `PricingError` and converted the exceptions reference to mkdocstrings directives, and enriched the cost-tracking (`strict`/`PricingError`, dual budget checks, nullable cost fields) and async-guardrails (`cancel_on_failure`/`timeout` scope, monitoring-mode error swallowing) guides. Standardized the project on the `pydantic-ai-shields` slug. `mkdocs build --strict` passes with zero warnings.
+
 ## [0.3.3] - 2026-05-24
 
 ### Infrastructure

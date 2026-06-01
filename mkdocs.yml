@@ -1,8 +1,8 @@
 site_name: Pydantic AI Shields
 site_description: Guardrail capabilities for Pydantic AI agents
-site_url: https://vstorm-co.github.io/pydantic-ai-middleware/
-repo_url: https://github.com/vstorm-co/pydantic-ai-middleware
-repo_name: vstorm-co/pydantic-ai-middleware
+site_url: https://vstorm-co.github.io/pydantic-ai-shields/
+repo_url: https://github.com/vstorm-co/pydantic-ai-shields
+repo_name: vstorm-co/pydantic-ai-shields
 
 theme:
   name: material
@@ -89,33 +89,22 @@ plugins:
           - installation.md: Installation instructions
           - getting-help.md: How to get help
         Core Concepts:
-          - concepts/index.md: Core concepts overview
-          - concepts/middleware.md: Creating middleware
-          - concepts/hooks.md: Lifecycle hooks and context sharing
-          - concepts/decorators.md: Decorator syntax for middleware
+          - concepts/index.md: How shields work as native capabilities
         Advanced Features:
-          - advanced/middleware-chains.md: Middleware chain composition
-          - advanced/parallel-execution.md: Parallel middleware execution
-          - advanced/conditional-middleware.md: Conditional routing
-          - advanced/async-guardrails.md: Async guardrails
-          - advanced/tool-name-filtering.md: Tool name filtering
-          - advanced/on-tool-error.md: Tool error handling hook
-          - advanced/hook-timeouts.md: Per-middleware hook timeouts
-          - advanced/permission-decisions.md: Permission decision protocol
-          - advanced/cost-tracking.md: Cost tracking middleware
-          - advanced/builder.md: Builder/factory API for middleware pipelines
-          - advanced/config-loading.md: JSON/YAML configuration loading
-          - advanced/pipeline-spec.md: Pipeline spec builder
+          - advanced/async-guardrails.md: Concurrent guard + LLM execution
+          - advanced/cost-tracking.md: Token/USD tracking and budget enforcement
         Examples:
-          - examples/*.md
+          - examples/index.md: Examples overview
+          - examples/security.md: Layered security configuration
+          - examples/pii-detection.md: PII detection
+          - examples/prompt-injection.md: Prompt injection detection
+          - examples/toxicity-check.md: Toxicity check
+          - examples/json-schema-validation.md: JSON schema validation
+          - examples/cost-tracking.md: Cost tracking example
         API Reference:
-          - api/middleware.md: AgentMiddleware API
-          - api/agent.md: MiddlewareAgent API
-          - api/chain.md: MiddlewareChain API
-          - api/conditional.md: ConditionalMiddleware API
-          - api/pipeline_spec.md: PipelineSpec API
-          - api/toolset.md: MiddlewareToolset API
-          - api/decorators.md: Decorator functions
+          - api/index.md: API overview
+          - api/guardrails.md: Infrastructure shields API
+          - api/shields.md: Content shields API
           - api/exceptions.md: Exception classes
 
 markdown_extensions:
@@ -170,10 +159,10 @@ extra:
     deprecated: Deprecated
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/vstorm-co/pydantic-ai-middleware
+      link: https://github.com/vstorm-co/pydantic-ai-shields
       name: GitHub
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/pydantic-ai-middleware/
+      link: https://pypi.org/project/pydantic-ai-shields/
       name: PyPI
   generator: false
 

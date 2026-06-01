@@ -37,21 +37,21 @@ All shields compose naturally — add as many as you need. Input shields fire in
 
 General-purpose shields where **you provide the logic**:
 
-- `InputGuard(guard=my_function)` — your function decides what's safe
-- `OutputGuard(guard=my_function)` — your function validates output
-- `ToolGuard(blocked=[...], require_approval=[...])` — configure tool access
-- `CostTracking(budget_usd=5.0)` — track costs and enforce budgets
-- `AsyncGuardrail(guard=..., timing="concurrent")` — run any guard concurrently with LLM
+- [`InputGuard`][pydantic_ai_shields.guardrails.InputGuard]`(guard=my_function)` — your function decides what's safe
+- [`OutputGuard`][pydantic_ai_shields.guardrails.OutputGuard]`(guard=my_function)` — your function validates output
+- [`ToolGuard`][pydantic_ai_shields.guardrails.ToolGuard]`(blocked=[...], require_approval=[...])` — configure tool access
+- [`CostTracking`][pydantic_ai_shields.guardrails.CostTracking]`(budget_usd=5.0)` — track costs and enforce budgets
+- [`AsyncGuardrail`][pydantic_ai_shields.guardrails.AsyncGuardrail]`(guard=..., timing="concurrent")` — run any guard concurrently with LLM
 
 ### Content Shields
 
 **Ready-to-use** shields with built-in detection patterns:
 
-- `PromptInjection()` — 6 injection categories, 3 sensitivity levels
-- `PiiDetector()` — email, phone, SSN, credit card, IP detection
-- `SecretRedaction()` — API keys, tokens, credentials in output
-- `BlockedKeywords(keywords=[...])` — forbidden words/phrases
-- `NoRefusals()` — prevent LLM from refusing to help
+- [`PromptInjection`][pydantic_ai_shields.shields.PromptInjection]`()` — 6 injection categories, 3 sensitivity levels
+- [`PiiDetector`][pydantic_ai_shields.shields.PiiDetector]`()` — email, phone, SSN, credit card, IP detection
+- [`SecretRedaction`][pydantic_ai_shields.shields.SecretRedaction]`()` — API keys, tokens, credentials in output
+- [`BlockedKeywords`][pydantic_ai_shields.shields.BlockedKeywords]`(keywords=[...])` — forbidden words/phrases
+- [`NoRefusals`][pydantic_ai_shields.shields.NoRefusals]`()` — prevent LLM from refusing to help
 
 ## Next Steps
 

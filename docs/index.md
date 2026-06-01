@@ -37,21 +37,21 @@ agent = Agent(
 
 | Shield | Description |
 |--------|-------------|
-| [`CostTracking`](advanced/cost-tracking.md) | Token/USD tracking with budget enforcement |
-| `ToolGuard` | Block tools or require human approval |
-| `InputGuard` | Custom input validation (pluggable function) |
-| `OutputGuard` | Custom output validation (pluggable function) |
-| [`AsyncGuardrail`](advanced/async-guardrails.md) | Run guard concurrently with LLM call |
+| [`CostTracking`][pydantic_ai_shields.guardrails.CostTracking] | Token/USD tracking with budget enforcement |
+| [`ToolGuard`][pydantic_ai_shields.guardrails.ToolGuard] | Block tools or require human approval |
+| [`InputGuard`][pydantic_ai_shields.guardrails.InputGuard] | Custom input validation (pluggable function) |
+| [`OutputGuard`][pydantic_ai_shields.guardrails.OutputGuard] | Custom output validation (pluggable function) |
+| [`AsyncGuardrail`][pydantic_ai_shields.guardrails.AsyncGuardrail] | Run guard concurrently with LLM call |
 
 ### Content Shields
 
 | Shield | Description |
 |--------|-------------|
-| `PromptInjection` | Detect prompt injection / jailbreak (6 categories, 3 sensitivity levels) |
-| `PiiDetector` | Detect PII — email, phone, SSN, credit card, IP |
-| `SecretRedaction` | Block API keys, tokens, credentials in output |
-| `BlockedKeywords` | Block forbidden keywords/phrases |
-| `NoRefusals` | Block LLM refusals ("I cannot help with that") |
+| [`PromptInjection`][pydantic_ai_shields.shields.PromptInjection] | Detect prompt injection / jailbreak (6 categories, 3 sensitivity levels) |
+| [`PiiDetector`][pydantic_ai_shields.shields.PiiDetector] | Detect PII — email, phone, SSN, credit card, IP |
+| [`SecretRedaction`][pydantic_ai_shields.shields.SecretRedaction] | Block API keys, tokens, credentials in output |
+| [`BlockedKeywords`][pydantic_ai_shields.shields.BlockedKeywords] | Block forbidden keywords/phrases |
+| [`NoRefusals`][pydantic_ai_shields.shields.NoRefusals] | Block LLM refusals ("I cannot help with that") |
 
 ## Next Steps
 

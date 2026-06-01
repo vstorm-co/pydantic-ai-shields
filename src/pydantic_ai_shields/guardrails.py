@@ -192,7 +192,7 @@ class CostTracking(AbstractCapability[Any]):
     def _calculate_cost(
         self, model_name: str, input_tokens: int, output_tokens: int
     ) -> float | None:
-        """Calculate USD cost using genai-prices ``calc_price``."""
+        """Calculate USD cost using genai-prices `calc_price`."""
         try:
             from genai_prices import calc_price  # type: ignore[attr-defined]
             from genai_prices.types import Usage as GenaiUsage  # type: ignore[attr-defined]
@@ -266,8 +266,8 @@ class CostTracking(AbstractCapability[Any]):
 class ToolGuard(AbstractCapability[Any]):
     """Control tool access: block tools, require approval, or allow freely.
 
-    Uses ``prepare_tools`` to hide blocked tools from the model entirely,
-    and ``before_tool_execute`` to enforce approval for sensitive tools.
+    Uses `prepare_tools` to hide blocked tools from the model entirely,
+    and `before_tool_execute` to enforce approval for sensitive tools.
 
     Example:
         ```python
@@ -434,9 +434,9 @@ class AsyncGuardrail(AbstractCapability[Any]):
     short-circuited to save API costs.
 
     Timing modes:
-    - ``"concurrent"``: Guardrail runs alongside model; fail-fast on violation
-    - ``"blocking"``: Guardrail completes before model starts (traditional)
-    - ``"monitoring"``: Guardrail runs after model (fire-and-forget, non-blocking)
+    - `"concurrent"`: Guardrail runs alongside model; fail-fast on violation
+    - `"blocking"`: Guardrail completes before model starts (traditional)
+    - `"monitoring"`: Guardrail runs after model (fire-and-forget, non-blocking)
 
     Example:
         ```python
