@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import asyncio
+from decimal import Decimal
 from typing import Any
+from unittest.mock import MagicMock, patch
 
 import pytest
-from pydantic_ai import Agent
+from pydantic_ai import Agent, RunContext
+from pydantic_ai.messages import ToolCallPart
 from pydantic_ai.models.test import TestModel
 from pydantic_ai.tools import ToolDefinition
+from pydantic_ai.usage import RunUsage
 
 from pydantic_ai_shields.guardrails import (
     AsyncGuardrail,
@@ -23,13 +28,6 @@ from pydantic_ai_shields.guardrails import (
     ToolBlocked,
     ToolGuard,
 )
-from unittest.mock import patch
-from decimal import Decimal
-from unittest.mock import MagicMock, patch
-import asyncio
-from pydantic_ai import RunContext
-from pydantic_ai.usage import RunUsage
-from pydantic_ai.messages import ToolCallPart
 
 # ---------------------------------------------------------------------------
 # CostTracking
