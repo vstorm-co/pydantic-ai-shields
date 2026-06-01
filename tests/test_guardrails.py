@@ -136,7 +136,6 @@ class TestToolGuard:
 
     @pytest.mark.anyio
     async def test_blocked_tools_hidden(self):
-
         cap = ToolGuard(blocked=["execute", "write_file"])
 
         ctx = _make_ctx()
@@ -515,10 +514,8 @@ class TestAsyncGuardrailEdgeCases:
 
 
 def _make_ctx() -> Any:
-
     return RunContext(deps=None, model=TestModel(), usage=RunUsage())
 
 
 def _make_call(tool_name: str) -> Any:
-
     return ToolCallPart(tool_name=tool_name, args={}, tool_call_id="test_call")

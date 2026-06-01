@@ -150,7 +150,6 @@ class TestPiiDetector:
 
     @pytest.mark.anyio
     async def test_none_prompt_passes(self):
-
         cap = PiiDetector()
         ctx = RunContext(deps=None, model=TestModel(), usage=RunUsage())
         await cap.before_run(ctx)
@@ -300,7 +299,6 @@ class TestBlockedKeywords:
 
     @pytest.mark.anyio
     async def test_none_prompt_passes(self):
-
         cap = BlockedKeywords(keywords=["bad"])
         ctx = RunContext(deps=None, model=TestModel(), usage=RunUsage())
         await cap.before_run(ctx)
