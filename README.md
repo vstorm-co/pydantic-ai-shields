@@ -33,6 +33,49 @@
 
 ---
 
+> ### ⬆️ Upstreamed to `pydantic-ai-harness`
+>
+> Working together with the Pydantic team, we are moving this library's functionality into the official
+> **[pydantic-ai-harness](https://github.com/pydantic/pydantic-ai-harness)**, where it lives as
+> [`pydantic_ai_harness/guardrails`](https://github.com/pydantic/pydantic-ai-harness/tree/main/pydantic_ai_harness/guardrails).
+>
+> **For new projects, use the harness** — it is maintained by Pydantic alongside Pydantic AI itself. This
+> repository stays on PyPI and keeps working for everyone already depending on it.
+>
+> ```python
+> from pydantic_ai import Agent
+> from pydantic_ai_harness.guardrails import InputGuardrail, ToolGuardrail
+>
+> agent = Agent(
+>     "openai:gpt-5.4",
+>     capabilities=[
+>         InputGuardrail(guard=no_secrets),
+>         ToolGuardrail(guard=stay_in_the_workspace, result_guard=scrub_secrets),
+>     ],
+> )
+> ```
+>
+> **Landed upstream**
+>
+> | This library | In `pydantic_ai_harness.guardrails` | PR |
+> |---|---|---|
+> | `InputGuard` | `InputGuardrail` | [#219](https://github.com/pydantic/pydantic-ai-harness/pull/219), merged as [#249](https://github.com/pydantic/pydantic-ai-harness/pull/249) |
+> | `OutputGuard` | `OutputGuardrail` | [#219](https://github.com/pydantic/pydantic-ai-harness/pull/219), merged as [#249](https://github.com/pydantic/pydantic-ai-harness/pull/249) |
+> | `ToolGuard` (`blocked`, `require_approval`) | `ToolGuardrail` — a `guard` over the tool's arguments plus a `result_guard` over what it returned; approval is the `approve` outcome | [#470](https://github.com/pydantic/pydantic-ai-harness/pull/470) |
+> | `AsyncGuardrail(timing="concurrent")` | `InputGuardrail(parallel=True)` | [#249](https://github.com/pydantic/pydantic-ai-harness/pull/249) |
+>
+> Upstream a guard returns a `GuardrailResult` rather than a bare `bool`, so besides **allow** and **block** it
+> can **replace** the value (redaction), **retry** an output, or ask for **approval** on a tool call.
+>
+> **In review**
+>
+> | This library | Upstream | PR |
+> |---|---|---|
+> | `PromptInjection`, `PiiDetector`, `SecretRedaction`, `BlockedKeywords` | `guardrails.detectors` — `redact_secrets`, `redact_personal_data`, `blocked_keywords([...])` — plus guard chains (`guard=[...]`), so a redactor placed first cleans the text every later check reads | [#478](https://github.com/pydantic/pydantic-ai-harness/pull/478) |
+> | `CostTracking(budget_usd=...)` | `SpendLimits` — spend and token budgets over windows longer than a single run, shareable across worker processes | [#474](https://github.com/pydantic/pydantic-ai-harness/pull/474) |
+>
+> `NoRefusals` has no upstream equivalent.
+
 > **Part of [Pydantic Deep Agents](https://github.com/vstorm-co/pydantic-deepagents)** — the open-source Claude Code alternative & Python agent framework. Use this library standalone, or get everything wired together in one `create_deep_agent()` call.
 
 **Pydantic AI Shields** are ready-to-use guardrail [capabilities](https://ai.pydantic.dev/capabilities/) for [Pydantic AI](https://ai.pydantic.dev/) agents. Drop them into any agent for cost control, tool permissions, prompt-injection defense, PII detection, and secret redaction — no wrappers, no plumbing.
