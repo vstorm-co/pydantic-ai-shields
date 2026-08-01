@@ -18,6 +18,33 @@
 
 ---
 
+!!! info "Upstreamed to `pydantic-ai-harness`"
+    Working together with the Pydantic team, we are moving this library's functionality into the official
+    [pydantic-ai-harness](https://github.com/pydantic/pydantic-ai-harness), where it lives as
+    [`pydantic_ai_harness/guardrails`](https://github.com/pydantic/pydantic-ai-harness/tree/main/pydantic_ai_harness/guardrails).
+
+    **For new projects, use the harness.** `InputGuard` / `OutputGuard` / `ToolGuard` are upstream today as
+    `InputGuardrail` / `OutputGuardrail` / `ToolGuardrail`
+    ([#249](https://github.com/pydantic/pydantic-ai-harness/pull/249),
+    [#470](https://github.com/pydantic/pydantic-ai-harness/pull/470)); the content shields
+    ([#478](https://github.com/pydantic/pydantic-ai-harness/pull/478)) and cost budgets
+    ([#474](https://github.com/pydantic/pydantic-ai-harness/pull/474)) are in review. This library stays on
+    PyPI and keeps working for everyone already depending on it. The
+    [README](https://github.com/vstorm-co/pydantic-ai-shields#readme) has the full mapping.
+
+    ```python
+    from pydantic_ai import Agent
+    from pydantic_ai_harness.guardrails import InputGuardrail, ToolGuardrail
+
+    agent = Agent(
+        "openai:gpt-5.4",
+        capabilities=[
+            InputGuardrail(guard=no_secrets),
+            ToolGuardrail(guard=stay_in_the_workspace, result_guard=scrub_secrets),
+        ],
+    )
+    ```
+
 !!! tip "Part of Pydantic Deep Agents"
     **Pydantic AI Shields** is one library in [Pydantic Deep Agents](https://github.com/vstorm-co/pydantic-deepagents) — the open-source
     Claude Code alternative & Python agent framework. Use it standalone, or get every
