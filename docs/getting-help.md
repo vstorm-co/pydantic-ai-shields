@@ -26,5 +26,5 @@ For questions, ideas, and general discussion:
 ## Related Projects
 
 - [Pydantic AI](https://ai.pydantic.dev/) - The foundation this library builds on
-- [pydantic-deep](https://github.com/vstorm-co/pydantic-deep) - Full agent framework with planning, subagents, skills
+- [pydantic-deep](https://github.com/vstorm-co/pydantic-deepagents) - Full agent framework with planning, subagents, skills
 - [pydantic-ai-backend](https://github.com/vstorm-co/pydantic-ai-backend) - File storage and sandbox backends
